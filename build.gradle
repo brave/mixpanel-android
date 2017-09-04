@@ -1,0 +1,64 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+group = GROUP
+version = VERSION_NAME
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion '24.0.3'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 23
+        testApplicationId "com.mixpanel.android.mpmetrics"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        consumerProguardFiles 'proguard.txt'
+
+        buildConfigField "String", "MIXPANEL_VERSION", "\"${version}\""
+
+        lintOptions {
+            abortOnError true
+            warningsAsErrors false
+            disable "UnusedResources"
+            textOutput "stdout"
+            textReport true
+        }
+    }
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+// Note- *all* dependencies are marked as optional in our final
+// pom! If you need a transitive dependency in the library, you'll
+// have to change the bit in uploadArchives that marks all dependencies as optional.
+dependencies {
+    compile 'com.google.android.gms:play-services-gcm:10.0.1'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14.1'
+}
+
+apply from: rootProject.file('maven.gradle')
