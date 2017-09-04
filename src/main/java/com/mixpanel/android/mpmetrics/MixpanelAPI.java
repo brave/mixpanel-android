@@ -2029,27 +2029,7 @@ public class MixpanelAPI {
         try {
             final JSONObject messageProps = new JSONObject();
 
-            final Map<String, String> referrerProperties = mPersistentIdentity.getReferrerProperties();
-            for (final Map.Entry<String, String> entry : referrerProperties.entrySet()) {
-                final String key = entry.getKey();
-                final String value = entry.getValue();
-                messageProps.put(key, value);
-            }
-
-            mPersistentIdentity.addSuperPropertiesToObject(messageProps);
-
-            // Don't allow super properties or referral properties to override these fields,
-            // but DO allow the caller to override them in their given properties.
-            final double timeSecondsDouble = (System.currentTimeMillis()) / 1000.0;
-            final long timeSeconds = (long) timeSecondsDouble;
-            messageProps.put("time", timeSeconds);
             messageProps.put("distinct_id", getDistinctId());
-
-            if (null != eventBegin) {
-                final double eventBeginDouble = ((double) eventBegin) / 1000.0;
-                final double secondsElapsed = timeSecondsDouble - eventBeginDouble;
-                messageProps.put("$duration", secondsElapsed);
-            }
 
             if (null != properties) {
                 final Iterator<?> propIter = properties.keys();

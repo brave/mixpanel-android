@@ -542,89 +542,10 @@ import javax.net.ssl.SSLSocketFactory;
             private JSONObject getDefaultEventProperties()
                     throws JSONException {
                 final JSONObject ret = new JSONObject();
-
-                ret.put("mp_lib", "android");
-                ret.put("$lib_version", MPConfig.VERSION);
-
-                // For querying together with data from other libraries
-                ret.put("$os", "Android");
-                ret.put("$os_version", Build.VERSION.RELEASE == null ? "UNKNOWN" : Build.VERSION.RELEASE);
-
-                ret.put("$manufacturer", Build.MANUFACTURER == null ? "UNKNOWN" : Build.MANUFACTURER);
-                ret.put("$brand", Build.BRAND == null ? "UNKNOWN" : Build.BRAND);
-                ret.put("$model", Build.MODEL == null ? "UNKNOWN" : Build.MODEL);
-
-                try {
-                    try {
-                        final int servicesAvailable = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext);
-                        switch (servicesAvailable) {
-                            case ConnectionResult.SUCCESS:
-                                ret.put("$google_play_services", "available");
-                                break;
-                            case ConnectionResult.SERVICE_MISSING:
-                                ret.put("$google_play_services", "missing");
-                                break;
-                            case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
-                                ret.put("$google_play_services", "out of date");
-                                break;
-                            case ConnectionResult.SERVICE_DISABLED:
-                                ret.put("$google_play_services", "disabled");
-                                break;
-                            case ConnectionResult.SERVICE_INVALID:
-                                ret.put("$google_play_services", "invalid");
-                                break;
-                        }
-                    } catch (RuntimeException e) {
-                        // Turns out even checking for the service will cause explosions
-                        // unless we've set up meta-data
-                        ret.put("$google_play_services", "not configured");
-                    }
-
-                } catch (NoClassDefFoundError e) {
-                    ret.put("$google_play_services", "not included");
-                }
-
-                final DisplayMetrics displayMetrics = mSystemInformation.getDisplayMetrics();
-                ret.put("$screen_dpi", displayMetrics.densityDpi);
-                ret.put("$screen_height", displayMetrics.heightPixels);
-                ret.put("$screen_width", displayMetrics.widthPixels);
-
                 final String applicationVersionName = mSystemInformation.getAppVersionName();
                 if (null != applicationVersionName) {
                     ret.put("$app_version", applicationVersionName);
-                    ret.put("$app_version_string", applicationVersionName);
                 }
-
-                 final Integer applicationVersionCode = mSystemInformation.getAppVersionCode();
-                 if (null != applicationVersionCode) {
-                    ret.put("$app_release", applicationVersionCode);
-                    ret.put("$app_build_number", applicationVersionCode);
-                }
-
-                final Boolean hasNFC = mSystemInformation.hasNFC();
-                if (null != hasNFC)
-                    ret.put("$has_nfc", hasNFC.booleanValue());
-
-                final Boolean hasTelephony = mSystemInformation.hasTelephony();
-                if (null != hasTelephony)
-                    ret.put("$has_telephone", hasTelephony.booleanValue());
-
-                final String carrier = mSystemInformation.getCurrentNetworkOperator();
-                if (null != carrier)
-                    ret.put("$carrier", carrier);
-
-                final Boolean isWifi = mSystemInformation.isWifiConnected();
-                if (null != isWifi)
-                    ret.put("$wifi", isWifi.booleanValue());
-
-                final Boolean isBluetoothEnabled = mSystemInformation.isBluetoothEnabled();
-                if (isBluetoothEnabled != null)
-                    ret.put("$bluetooth_enabled", isBluetoothEnabled);
-
-                final String bluetoothVersion = mSystemInformation.getBluetoothVersion();
-                if (bluetoothVersion != null)
-                    ret.put("$bluetooth_version", bluetoothVersion);
-
                 return ret;
             }
 
